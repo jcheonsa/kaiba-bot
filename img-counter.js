@@ -142,7 +142,7 @@ module.exports.addBG = async (guildID, userID, background) => {
 
 module.exports.checkRole = async (guildID, userID, member) => {
   return await mongoose().then(async (mongoose) => {
-    if (member.roles.cache.has("715362163526467614")) {
+    if (member.roles.cache.has("")) {
     //try { 
 
       imgSchema.findOneAndUpdate(userID,

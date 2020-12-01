@@ -1,7 +1,7 @@
-const { prefix, lolRole, smashRole, dbfzRole, tftRole, animeRole, arkRole, shootRole, dndRole, kpopRole, partyRole } = require('../config.json')
+const { prefix, guildID, lolRole, smashRole, dbfzRole, tftRole, animeRole, arkRole, shootRole, dndRole, kpopRole, partyRole } = require('../config.json')
 
 module.exports.rolesOperator = async (message) => {
-    const list = client.guilds.cache.get("268982240569065472");
+    const list = client.guilds.cache.get(guildID);
 
     let member = message.member
 

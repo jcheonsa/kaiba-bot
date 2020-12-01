@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const iEditor = require("../img-counter");
-const prefix = "$";
+const prefix = require('../config.json')
 
 module.exports = {
   async addDesc1(message, guildID, userID, user) {
