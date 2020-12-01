@@ -41,7 +41,9 @@ Select a faction and rep your team with unique evolving badges!
 
 
 ## To Do
-- [x] adding instructional gifs
+- [ ] adding instructional gifs
+- [ ] link requirements
+- [ ] installation instructions
 - [x] basic economy/faction system
 - [ ] fix economy/xp leaderboard
 - [ ] XP/Level system
