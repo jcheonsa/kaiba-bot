@@ -24,6 +24,7 @@ Select a faction and rep your team with unique evolving badges!
 - role management
 - factions/xp & level/ economy system
 - customizable user cards
+- RPG/Turn-based combat
 - Yu-Gi-Oh! jokes  
 
 ## Requirements
@@ -32,7 +33,7 @@ Select a faction and rep your team with unique evolving badges!
 - NPM
 
 - MongoDB
-- Mongoose-OPM
+- Mongoose-ODM
 
 - CanvasJS
 - Cron
@@ -45,8 +46,8 @@ Select a faction and rep your team with unique evolving badges!
 - [ ] link requirements
 - [ ] installation instructions
 - [x] basic economy/faction system
-- [ ] fix economy/xp leaderboard
-- [ ] XP/Level system
+- [x] fix economy/xp leaderboard
+- [x] XP/Level system
 - [ ] modular dependencies
 
 ## Author
