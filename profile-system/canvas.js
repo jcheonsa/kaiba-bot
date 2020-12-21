@@ -19,6 +19,7 @@ module.exports = {
         const guildID = message.guild.id;
         const userID = target.id;
 
+        // get user's Duelist Kingdom RPG data if applicable
         const userData = await fSchema.findOne({
           guildID,
           userID,
@@ -35,6 +36,7 @@ module.exports = {
           console.log("no userData")
         }
 
+        // get user's configured profile information
         const userimgData = await imgSchema.findOne({
           guildID,
           userID,
@@ -62,6 +64,7 @@ module.exports = {
           member.user.displayAvatarURL({ format: "jpg" })
         );
 
+        // load the different obtainable user badges
         let badge1 = await loadImage(
           `profile-system/image/badges/league.png`
         );
@@ -94,7 +97,8 @@ module.exports = {
         );
         let background = await loadImage(`${BG}`);
 
-        const canvas = createCanvas(1000, 405, "png"); // (width, height) in pixels
+        // build the canvas (width, height) in pixels
+        const canvas = createCanvas(1000, 405, "png");
         const ctx = canvas.getContext("2d");
 
         var gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
@@ -160,8 +164,7 @@ module.exports = {
         ctx.shadowcolor = "transparent";
         ctx.globalCompositeOperation = "source-over";
 
-        // xp bar
-
+        // dnyamic xp bar
         ctx.beginPath();
         ctx.lineWidth = 2;
         ctx.globalAlpha = 1;
@@ -173,6 +176,7 @@ module.exports = {
         ctx.fillRect(270, 150, 630, 10)
         ctx.fill();
 
+        // fills up based on how much xp the user has obtained
         ctx.fillStyle = "#fff242";
         ctx.globalAlpha = 0.5;
         ctx.fillRect(270, 150, ((100 / (level * 100 * level)) * xp) * 6.3, 10);
@@ -218,17 +222,15 @@ module.exports = {
         ctx.fillStyle = BGcolor;
         ctx.fillText(member.displayName, 300, 95, 400);
 
-
-
+        // avatar thumbnail
         ctx.shadowColor = "#9969e0";
-
         ctx.shadowBlur = 20;
         ctx.shadowOffsetX = 7;
         ctx.shadowOffsetY = 6;
         ctx.globalAlpha = 0.0;
         ctx.strokeRect(15, 15, 220, 220);
         ctx.globalAlpha = 1.0;
-        ctx.drawImage(avatar, 25, 25, 200, 200); // avatar thumbnail
+        ctx.drawImage(avatar, 25, 25, 200, 200);
         ctx.shadowBlur = 0;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
@@ -242,7 +244,7 @@ module.exports = {
           ctx.drawImage(raBadge, 865, 25, 95, 95);
         }
 
-        if (
+        else if (
           faction === `Slifer's Production Crew`
         ) {
           let sfBadge = await loadImage('profile-system/image/smsliferB.png');
@@ -250,7 +252,7 @@ module.exports = {
           ctx.drawImage(sfBadge, 865, 25, 95, 95);
         }
 
-        if (
+        else if (
           faction === `Obelisk's Tormentors`
         ) {
           let obBadge = await loadImage('profile-system/image/smobeliskB.png');
@@ -258,7 +260,7 @@ module.exports = {
           ctx.drawImage(obBadge, 865, 25, 95, 95);
         }
 
-        // League Badge
+        // badge 1
         if (
           member.roles.cache.has(config.tftRole) ||
           member.roles.cache.has(config.lolRole)
@@ -274,7 +276,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // fighting games
+        // badge 2
         if (member.roles.cache.has(config.dbfzRole)) {
           ctx.globalAlpha = 1.0
           ctx.shadowBlur = 10;
@@ -295,7 +297,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // baby and anime badge
+        // badge 3
         if (
           member.roles.cache.has(config.bRole) ||
           member.roles.cache.has(config.animeRole)
@@ -311,7 +313,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // Arknights Badge
+        // badge 4
         if (member.roles.cache.has(config.arkRole)) {
           ctx.shadowBlur = 10;
           ctx.shadowOffsetX = 2;
@@ -331,7 +333,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // Smash Bros badge
+        // badge 5
         if (member.roles.cache.has(config.smashRole)) {
           ctx.shadowBlur = 10;
           ctx.shadowOffsetX = 2;
@@ -351,7 +353,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // Shooter Badge
+        // badge 6
         if (member.roles.cache.has(config.shootRole)) {
           ctx.shadowBlur = 10;
           ctx.shadowOffsetX = 2;
@@ -371,7 +373,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // expat badge
+        // badge 7
         if (member.roles.cache.has(config.partyRole)) {
           ctx.globalAlpha = 1.0;
           ctx.drawImage(exBadge, 32, 348, 40, 40);
@@ -384,7 +386,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // Nitro Badge
+        // badge 8
         if (member.roles.cache.has(config.nitroRole)) {
           ctx.globalAlpha = 1.0;
           ctx.drawImage(nitroBadge, 117, 348, 25, 40);
@@ -397,7 +399,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // Bot Badge
+        // badge 9
         if (member.roles.cache.has(config.botRole)) {
           ctx.shadowBlur = 10;
           ctx.shadowOffsetX = 2;
@@ -421,6 +423,7 @@ module.exports = {
 
         message.channel.send(duelistCard);
         return message.channel.stopTyping();
+
       } catch (e) {
         console.log(e)
         return message.channel.stopTyping();
@@ -429,6 +432,7 @@ module.exports = {
     })
   },
 
+  // limit and scale text character length
   applyText: (canvas, text) => {
     const ctx = canvas.getContext("2d");
 
@@ -441,6 +445,7 @@ module.exports = {
     return ctx.font;
   },
 
+  // adjust position of user background to fit to the canvas
   bgMOD: (ctx, background, x, y, w, h, offsetX, offsetY) => {
     if (arguments.length === 2) {
       x = y = 0;
