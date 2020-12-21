@@ -1,4 +1,4 @@
-
+// handles basic player calculations
 module.exports = {
 
     // calculate user damage

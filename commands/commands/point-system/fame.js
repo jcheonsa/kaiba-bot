@@ -1,3 +1,4 @@
+// users to fame/thank each other for helping out
 const fSchema = require('../../../schemas/factionSchema')
 
 module.exports = {
@@ -29,6 +30,7 @@ module.exports = {
                 guildID,
             })
 
+            // 24 hour timer
             if (authorData && authorData.lastFame) {
                 const then = new Date(authorData.lastFame)
 

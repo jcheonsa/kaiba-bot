@@ -1,3 +1,4 @@
+// add information to user profile card
 const Discord = require("discord.js");
 const iEditor = require("../img-counter");
 const { prefix } = require('../../config.json')

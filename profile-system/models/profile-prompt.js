@@ -1,3 +1,4 @@
+// customization options as an embed
 const { prefix, lolRole, smashRole, dbfzRole, tftRole, animeRole, arkRole, shootRole, dndRole, kpopRole, partyRole } = require('../../config.json')
 const Discord = require('discord.js')
 

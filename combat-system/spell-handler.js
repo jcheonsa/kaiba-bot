@@ -1,5 +1,4 @@
-
-
+// handles all spells and skills that uses all stats
 module.exports = {
 
     checkSpell: (message, combatEmbed, adReaction, userData, userHP, userMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK, turn, minDMG, maxDMG, spellName) => {

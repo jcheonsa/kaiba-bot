@@ -5,7 +5,6 @@ const Discord = require("discord.js"),
   path = require('path'),
   fs = require('fs'),
   mongo = require('./mongoose'),
-  moment = require('moment'),
   client = new Discord.Client(),
   loadFeatures = require('./features/loadFeatures.js'),
   levels = require('./point-system/levels')
@@ -89,6 +88,7 @@ client.on("message", async (message) => {
       ima.imagine(message, member);
       break;
 
+    // initiate combat module
     case "spark":
       const combat = require('./combat-system/combat-handler')
       combat.setCombat(message)
@@ -103,24 +103,7 @@ client.on("message", async (message) => {
     //   console.log(`User Acc ${userACC}`)
     //   break;
 
-    case "mage":
-      var test = require('./dead commands/class-check/checkSecondMage')
-      test.secondMage(message)
-      break;
-
-    case "warrior":
-      var test1 = require('./dead commands/class-check/checkSecondWarrior')
-      test1.secondWarrior(message)
-      break;
-    case "ranger":
-      var test2 = require('./dead commands/class-check/checkSecondRange')
-      test2.secondRange(message)
-      break;
-    case "thief":
-      var test3 = require('./dead commands/class-check/checkSecondThief')
-      test3.secondThief(message)
-      break;
-
+    // server information
     case "server":
       if (args[1].toLowerCase() === "stats") {
         let embed = new Discord.MessageEmbed()
@@ -144,7 +127,6 @@ client.on("message", async (message) => {
       break;
 
   }
-
 
 });
 

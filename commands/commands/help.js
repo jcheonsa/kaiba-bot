@@ -1,3 +1,4 @@
+// bot & server information
 const Discord = require("discord.js");
 const { prefix, build } = require('../../config.json')
 
@@ -7,7 +8,7 @@ module.exports = {
     description: "Describes all of this bot's commands",
     callback: (message) => {
         try {
-            const helpEmbed = new Discord.MessageEmbed() // bot info script
+            const helpEmbed = new Discord.MessageEmbed()
                 .setAuthor(
                     "Seto Kaiba",
                     "https://pbs.twimg.com/profile_images/1161902985808633856/V3_zMF1x.jpg"
@@ -21,7 +22,7 @@ module.exports = {
                     "Provides erver-side automation. Type **&help** to check my associate, Rosé Bot!"
                 )
                 .addField(`\u200B`, `\u200B`)
-                .addField(`${prefix}profile`, `Customize your server profile! Type **${prefix}imagine** to check out yours!` )
+                .addField(`${prefix}profile`, `Customize your server profile! Type **${prefix}imagine** to check out yours!`)
                 .addField(`${prefix}sort`, "sort teams! Useful for league and stuff.")
                 .addField(`${prefix}rpg`, `find out more about our in-server rpg, **Duelist Kingdom**.`)
                 .addField(`&help`, `Check out our server's music-bot, **Rosé**.`)
@@ -57,8 +58,9 @@ module.exports = {
             message.channel.send(helpEmbed);
             console.log(message.guild.name + ` info was accessed`);
 
-        } catch {
+        } catch (e) {
             message.channel.send("Error in processing your request.")
+            console.log(e)
         }
     }
 }

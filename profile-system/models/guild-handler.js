@@ -1,7 +1,7 @@
+// log users into mongo when they join a faction
 const Discord = require("discord.js")
 const { prefix } = require('../../config.json')
 const factionSchema = require("../../schemas/factionSchema")
-
 
 module.exports = {
 

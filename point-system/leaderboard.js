@@ -1,3 +1,4 @@
+// get points for the leaderboard
 const mongo = require('../mongoose')
 const factionSchema = require('../schemas/factionSchema')
 

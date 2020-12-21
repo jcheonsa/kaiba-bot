@@ -1,12 +1,11 @@
+// second adv warrior
 const Discord = require('discord.js');
 const jobadvProc = require('../../models/class-handler')
 
 module.exports = {
 
     async secondWarrior(client, guildID, userID, lvlChannel, god) {
-
         try {
-
             const oneEmoji = "1️⃣"
             const twoEmoji = "2️⃣"
             const threeEmoji = "3️⃣"

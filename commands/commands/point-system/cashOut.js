@@ -1,3 +1,4 @@
+// manual voice-chat minutes to XP conversion
 const fSchema = require('../../../schemas/factionSchema')
 const levels = require('../../../point-system/levels')
 const { prefix, lvlChannel } = require('../../../config.json')
@@ -35,8 +36,6 @@ module.exports = {
             // 30 minutes / 30 = 1 xp
             // every 30 minutes equals 100 XP
             const vcToxp = (Math.floor(udXP * 2.9))
-
-            //const userIMG = await ima.imagine(message, member)
 
             let cashEmbed = new Discord.MessageEmbed()
 

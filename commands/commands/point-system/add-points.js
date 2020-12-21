@@ -1,3 +1,4 @@
+// allow admins to reward points to users
 const leaderboard = require('../../../point-system/leaderboard')
 
 module.exports = {
@@ -5,6 +6,7 @@ module.exports = {
   commands: ['nice'],
   description: "Rewards points to user.",
   expectedArgs: `<@user> <points>`,
+  permissions: ['ADMINISTRATOR'],
   callback: async (message) => {
     let member = message.mentions.members.first()
 
@@ -29,6 +31,5 @@ module.exports = {
 
     message.reply(`Gave <@${userID}> ${points} point(s). They now have ${newPoints} point(s)!`)
   },
-  permissions: ['ADMINISTRATOR']
 }
 

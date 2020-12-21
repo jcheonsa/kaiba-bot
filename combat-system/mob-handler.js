@@ -1,4 +1,4 @@
-
+// handles enemy calculation
 module.exports = {
     // calculate enemy damage
     calcMobDMG: (userData, userHP, newUserMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK,) => {
@@ -21,10 +21,9 @@ module.exports = {
         let { class: className, } = userData
         let { mobName, mp: mobMP, description: mobDESC, img: mobIMG } = mobData
 
-
         // get mob accuracy, scales with DEX and LUK
         let mobACC = Math.floor(100 + mobDEX + mobLUK)
-        // get user avoidability, scales with 20% of DEX and 80% of LUK
+        // get user avoidability, scales with 50% of DEX and 100% of LUK
         let userAVD = Math.floor(userDEX * 0.5) + Math.floor(userLUK)
         // calc hit chance by subtracting mobAVD from userACC and getting a percantage
         var hitChance = Math.floor(((mobACC - userAVD) / mobACC) * 100)

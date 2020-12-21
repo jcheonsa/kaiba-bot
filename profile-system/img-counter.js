@@ -1,3 +1,4 @@
+// handles all requests to change values in the user profile card
 const mongoose = require("../mongoose");
 const imgSchema = require("../schemas/imgSchema");
 

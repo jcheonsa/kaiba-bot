@@ -1,3 +1,4 @@
+// main XP and leveling module
 const Discord = require('discord.js'),
     mongoose = require('../mongoose'),
     fSchema = require('../schemas/factionSchema'),
@@ -9,13 +10,14 @@ lbProc = require('../features/features/point-system/lb-proc'),
 
 module.exports = (client) => {
 
+    // generate XP depending on how long a person is active in a voice channel
     client.on('voiceStateUpdate', (oldState, newState) => {
 
         const userID = oldState.member.user.id;
         const guildID = newState.guild.id
 
         // check for bot
-        //if (oldState.member.user.bot) return;
+        if (oldState.member.user.bot) return;
 
         if (oldState.channelID === newState.channelID) {
 
@@ -25,6 +27,7 @@ module.exports = (client) => {
 
         }
 
+        // log when a user joins a voice channel
         if (newState.channelID != null & oldState.channelID == null) {
             console.log(`${oldState.member.user.id} joined!`)
 
@@ -32,6 +35,7 @@ module.exports = (client) => {
             setOldTime(client, guildID, userID, oldTime)
         }
 
+        // log when a user disconnects from a voice channel
         if (oldState.channelID != null && newState.channelID === null) {
 
             console.log(`${oldState.member.user.id} left!`)
@@ -44,6 +48,7 @@ module.exports = (client) => {
 
     client.on('message', async message => {
 
+        // gain XP for typing in a text channel
         if (message.author.bot || message.content.startsWith("&")) return;
         if (message.channel instanceof Discord.DMChannel) {
             return client.users.get(ownerID).send(message)
@@ -51,10 +56,13 @@ module.exports = (client) => {
 
         const { client, guild, member } = message
 
+        // XP per message
         const xpPerMsg = 15
 
+        // log the message author to mongo
         const guildID = guild.id
         const userID = member.id
+
         try {
             const authorData = await fSchema.findOne({
                 guildID,
@@ -78,6 +86,7 @@ module.exports = (client) => {
 
             }
 
+            // if no cooldown, give them XP for the message
             addXP(client, guildID, userID, xpPerMsg, message)
 
             return
@@ -89,11 +98,11 @@ module.exports = (client) => {
 
 }
 
+// formula for getting the required level-up XP per level
 const getNeededXP = level => level * level * 100
 
+// main leveling function
 const addXP = async (client, guildID, userID, xpToAdd, message) => {
-
-    // deconstruct client from message and restrict RPG messages to the RPG channel
 
     const lvlChannel = client.channels.cache.get(config.lvlChannel)
     const pointsEmoji = client.emojis.cache.find(emoji => emoji.name === "meso");
@@ -103,7 +112,7 @@ const addXP = async (client, guildID, userID, xpToAdd, message) => {
         const now = new Date()
 
         try {
-
+            // set an XP cooldown
             await fSchema.findOneAndUpdate({
                 guildID,
                 userID
@@ -117,7 +126,7 @@ const addXP = async (client, guildID, userID, xpToAdd, message) => {
                     upsert: true
                 })
 
-            // add xp
+            // add XP
             const result = await fSchema.findOneAndUpdate({
                 guildID,
                 userID,
@@ -151,7 +160,7 @@ const addXP = async (client, guildID, userID, xpToAdd, message) => {
                     firstClass(client, guildID, userID, message)
                 }
 
-                if (level === 8) {
+                else if (level === 8) {
                     secondClass(client, guildID, userID, message)
                 }
 
@@ -184,7 +193,9 @@ const addXP = async (client, guildID, userID, xpToAdd, message) => {
             }
 
         } finally {
+            // update the leaderboards
             lbProc(client)
+            return mongoose.connection.close()
         }
 
     })
@@ -341,6 +352,7 @@ async function secondClass(client, guildID, userID, message) {
         console.log(e)
     }
 }
+
 // log when user joined a vc
 async function setOldTime(client, guildID, userID, oldTime) {
     try {
@@ -371,6 +383,7 @@ async function vcProc(client, guildID, userID, newTime) {
             userID,
         })
 
+        // get the difference in minutes between when the user logged in and logged out and reward them XP based on those minutes
         const oldTime = userData.lastJoined
         console.log(oldTime)
         const diffTime = moment.duration(newTime.diff(oldTime)).asMinutes();
@@ -392,12 +405,13 @@ async function vcProc(client, guildID, userID, newTime) {
     }
 }
 
+// allow users to manually convert their accumulated voice-chat minutes to XP
 async function cashOut(client, guildID, userID, vcToxp) {
 
     addXP(client, guildID, userID, vcToxp)
 
     try {
-        const userData = await fSchema.findOneAndUpdate({
+        await fSchema.findOneAndUpdate({
             guildID,
             userID,
         },
@@ -412,8 +426,8 @@ async function cashOut(client, guildID, userID, vcToxp) {
             })
 
 
-    } catch {
-        return userData
+    } catch (e) {
+        console.log(e)
     }
 }
 

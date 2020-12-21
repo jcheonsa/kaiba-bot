@@ -1,3 +1,4 @@
+// players choose their factions
 const Discord = require('discord.js')
 const { prefix, lvlChannel, raRole, slRole, obRole } = require('../../../config.json')
 const guildHandler = require('../../../profile-system/models/guild-handler')

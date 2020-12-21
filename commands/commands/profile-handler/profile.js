@@ -1,3 +1,4 @@
+// build your profile
 const Discord = require('discord.js')
 const profileHandler = require("../../../profile-system/models/profile-handler");
 const rO = require('../../../profile-system/models/profile-prompt')

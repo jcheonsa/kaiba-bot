@@ -1,3 +1,4 @@
+// register a new spell into mongo
 const spellSchema = require('../../schemas/spellSchema')
 
 module.exports = {

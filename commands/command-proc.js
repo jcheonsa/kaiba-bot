@@ -42,6 +42,7 @@ const validatePermissions = (permissions) => {
     }
 }
 
+// cooldown array
 let recentlyRan = []
 
 module.exports = (client, commandOptions) => {
@@ -133,7 +134,7 @@ module.exports = (client, commandOptions) => {
                     }, 1000 * cooldown);
                 }
 
-                // handl custom command code
+                // handle custom command code
                 callback(message, arguments, arguments.join(' '))
 
                 return

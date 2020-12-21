@@ -1,3 +1,4 @@
+// self-updating leaderboard
 const lbSchema = require('../../../schemas/LBSchema')
 const fSchema = require('../../../schemas/factionSchema')
 const Discord = require('discord.js')

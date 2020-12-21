@@ -1,3 +1,4 @@
+// main combat handler
 const Discord = require('discord.js')
 const { prefix } = require('../config.json')
 const classSchema = require('../schemas/classSchema')
@@ -14,6 +15,7 @@ module.exports = {
 
         await mongoose().then(async (mongoose) => {
 
+            // build the lobby embed that gives users information on the combat module
             const { guild, member } = message
             const guildID = guild.id
             const userID = member.id
@@ -26,11 +28,12 @@ module.exports = {
                 \n \u200B`)
                 .addFields(
                     {
-                        name: `This week's raid boss: \`\`Jhin\`\``, value: `"Even with the power imparted to you by your god.. you are no match for me."
+                        name: `This week's raid boss: \`\`Jhin\`\``, value: `"I bloom.. Like a flower in the dawn.."
                        \n  \u200B \u200B `
                     })
                 .setFooter(`the crackle of the bonfire soothes your soul.. warms your body.. and replenishes your spirit..`)
 
+            // allow users to choose to embark on an adventure or quit
             try {
 
                 let confirm = await message.channel.send(combatEmbed)
@@ -53,7 +56,7 @@ module.exports = {
                 },
                 )
 
-                // look for a random mob from the list
+                // look for a random enemy from the list. Enemy types include: mob, tier 3, tier 2, tier 1, and raid boss monsters.
                 const findMobData = await mobSchema.aggregate([{
                     $match: {
                         type: "mob"
@@ -136,10 +139,9 @@ module.exports = {
         let { class: className, spell1, spell2, spell3 } = userData
         let { mobName, mp: mobMP, img: mobIMG, description: mobDESC, } = mobData
 
-        // get the new HP of both entities after the last loop of damage
+        // get the new HP/MP of both entities after each iteration of damage
         let newMobHP = mobHP - userDMG
         let newUserHP = userHP - mobDMG
-
         let newUserMP = Math.floor(userMP - 0.4) + 2
 
         try {
@@ -177,16 +179,12 @@ module.exports = {
                     { name: '\u200b', value: '\u200b' }
                 )
 
+            // fill the rest of the embed with user-specific data
             player.checkUser(combatEmbed, userData)
-            // .addFields(
-            //     { name: "Class", value: `${className}`, inline: true },
-            //     { name: "Skill", value: `1) ${spell1} \n 2) ${spell2} \n 3) ${spell3} \n 4) **ULTIMATE ABILITY**`, inline: true },
-            //     { name: "Attack", value: `Scales with STR/DEX.`, inline: true },
-            // )
             adReaction.message.edit(combatEmbed)
             adReaction.message.reactions.removeAll()
 
-            // await user to take their turn with reactions
+            // await user to make their turn with reactions
             let confirm = await adReaction.message.edit(combatEmbed)
             await confirm.react("✅")
             await confirm.react("📜")
@@ -262,7 +260,7 @@ module.exports = {
                 message.reply("Draw.. You run back to the bonfire before suffering any further damage..")
             }
 
-            // if everyone still has HP, calculate dmg
+            // if everyone still has HP, move on to the next turn
 
             // basic attack
             if (reaction.emoji.name === "✅") {
@@ -271,8 +269,10 @@ module.exports = {
                 return player.calcUserDMG(message, combatEmbed, adReaction, changedUserData, newUserHP, newUserMP, userSTR, userDEX, userINT, userLUK, changedMobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK, turn, minDMG, maxDMG,)
 
             }
+            // basic magic attack
             else if (reaction.emoji.name === "📜") {
 
+                // calculate potential damage
                 return player.calcUserMagDMG(message, combatEmbed, adReaction, changedUserData, newUserHP, newUserMP, userSTR, userDEX, userINT, userLUK, changedMobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK, turn, minDMG, maxDMG,)
 
             }
@@ -283,6 +283,7 @@ module.exports = {
 
             }
 
+            // run from combat
             else if (reaction.emoji.name === "❎") {
                 if (userHP <= 0 || newUserHP <= 0) {
 
@@ -316,6 +317,7 @@ module.exports = {
 
 }
 
+// set up the first encounter embed
 async function encounter(message, combatEmbed, adReaction, userData, mobData) {
 
     var turn = 0;
@@ -356,16 +358,12 @@ async function encounter(message, combatEmbed, adReaction, userData, mobData) {
             { name: '\u200b', value: '\u200b' }
         )
 
+    // fill embed with user-specific values
     player.checkUser(combatEmbed, userData)
-
-    // .addFields(
-    //     { name: "Class", value: `${className}`, inline: true },
-    //     { name: "Skill", value: `1) ${spell1} \n 2) ${spell2} \n 3) ${spell3} \n 4) **ULTIMATE ABILITY**`, inline: true },
-    //     { name: "Attack", value: `Scales with STR/DEX.`, inline: true },
-    // )
     adReaction.message.edit(combatEmbed)
     adReaction.message.reactions.removeAll()
 
+    // first action of combat: basic attack, basic magic attack, spell 1 - 3, or run
     let confirm = await adReaction.message.edit(combatEmbed)
     await confirm.react("✅")
     await confirm.react("📜")
@@ -391,7 +389,7 @@ async function encounter(message, combatEmbed, adReaction, userData, mobData) {
 
     } else if (reaction.emoji.name === "📜") {
 
-        // calculate user spell damage
+        // calculate basic magic damage
         player.calcUserMagDMG(message, combatEmbed, adReaction, userData, userHP, userMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK, turn, minDMG, maxDMG,)
 
     } else if (reaction.emoji.name === "1️⃣") {
@@ -401,18 +399,14 @@ async function encounter(message, combatEmbed, adReaction, userData, mobData) {
 
     } else if (reaction.emoji.name === "2️⃣") {
 
+        // calculate spell damage
         spell.checkSpell(message, combatEmbed, adReaction, userData, userHP, userMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK, turn, minDMG, maxDMG, spell2)
 
 
     } else if (reaction.emoji.name === "3️⃣") {
-        spell.checkSpell(userData, userHP, userMP, userSTR, userDEX, userINT, userLUK, spell3)
 
-
-        combatEmbed.setImage('')
-            .setFooter("Loading..")
-        setTimeout(function () {
-            module.exports.combatProc(message, combatEmbed, adReaction, userData, userHP, userMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK, turn, minDMG, maxDMG, spell3)
-        }, 1000);
+        // calculate spell damage
+        spell.checkSpell(message, combatEmbed, adReaction, userData, userHP, userMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK, turn, minDMG, maxDMG, spell3)
 
     }
 

@@ -1,4 +1,4 @@
-
+// allows admins to bulk clear messages
 module.exports = {
 
   commands: ['clear'],

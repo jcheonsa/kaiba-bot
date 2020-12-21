@@ -1,3 +1,4 @@
+// get information on Kaiba's RPG system
 const Discord = require('discord.js');
 const { prefix, build } = require('../../../config.json')
 module.exports = {

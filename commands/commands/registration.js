@@ -1,3 +1,4 @@
+// register a new player into mongo
 const Discord = require('discord.js')
 const fSchema = require('../../schemas/factionSchema')
 const classSchema = require('../../schemas/classSchema')

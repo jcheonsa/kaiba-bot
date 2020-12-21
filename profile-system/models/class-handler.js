@@ -1,3 +1,4 @@
+// class advancement module
 const fSchema = require('../../schemas/factionSchema')
 
 module.exports = {

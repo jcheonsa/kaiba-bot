@@ -1,3 +1,4 @@
+// second adv mage
 const Discord = require('discord.js');
 const jobadvProc = require('../../models/class-handler')
 

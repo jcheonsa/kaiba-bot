@@ -1,9 +1,10 @@
+// get information on your faction
 const fSchema = require('../../../schemas/factionSchema')
 const Discord = require('discord.js')
 const { raRole, obRole, slRole } = require('../../../config.json')
 
 module.exports = {
-    
+
     commands: ["myguild", "myfaction"],
     description: "Returns information on your current faction.",
     cooldown: 25,

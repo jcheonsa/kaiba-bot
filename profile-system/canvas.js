@@ -1,4 +1,4 @@
-// imaging module
+// customizable user profile card
 const { createCanvas, loadImage, Canvas } = require("canvas");
 const { MessageAttachment } = require("discord.js");
 const config = require('../config.json')
