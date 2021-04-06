@@ -1,4 +1,3 @@
-// get information on Kaiba's RPG system
 const Discord = require('discord.js');
 const { prefix, build } = require('../../../config.json')
 module.exports = {
@@ -46,9 +45,8 @@ module.exports = {
                     "Blue-Eyes White Dragon " + build,
                     "https://upload.wikimedia.org/wikipedia/commons/9/99/Jennie_Kim_for_Marie_Claire_Korea_Magazine_on_October_9%2C_2018_%285%29.png")
             message.channel.send(helpEmbed);
-        } catch (e) {
-            console.log(e)
-            mongoose.connection.close();
+        } finally {
+
         }
     }
 

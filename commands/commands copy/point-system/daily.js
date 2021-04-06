@@ -1,4 +1,3 @@
-// daily rewards 
 const fSchema = require('../../../schemas/factionSchema'),
     levels = require('../../../point-system/levels')
 
@@ -22,10 +21,14 @@ module.exports = {
         const pointsEmoji = message.guild.emojis.cache.find(
             (emoji) => emoji.name === "meso"
         );
+        
         try {
             function dXP(min, max) {
                 return Math.floor(Math.random() * (max - min)) + min;
             }
+            // daily reward random xp from 35 - 75
+
+            // daily reward random points from 1 to 10
 
             // set up 24 hour CD timer for daily
             const now = new Date()
@@ -35,26 +38,26 @@ module.exports = {
                 userID: userID,
             })
 
-            // daily XP and points rewards dependent on your selected faction
             if (authorData && authorData.faction) {
                 if (authorData.faction === "Ra's Giga Chickens") {
                     var dailyXP = dXP(40, 80)
                     var dailyPoints = dXP(4, 8)
 
-                } else if (authorData.faction === "Obelisk's Tormentors") {
-                    var dailyXP = dXP(1, 200)
-                    var dailyPoints = dXP(1, 10)
-                }
-                else if (authorData.faction === "Slifer's Production Crew") {
-                    var dailyXP = dXP(20, 80)
-                    var dailyPoints = dXP(3, 6)
-                } else {
-                    var dailyXP = dXP(25, 100)
-                    var dailyPoints = dXP(1, 8)
-                }
+                } else
+                    if (authorData.faction === "Obelisk's Tormentors") {
+                        var dailyXP = dXP(1, 200)
+                        var dailyPoints = dXP(1, 10)
+                    }
+                    else
+                        if (authorData.faction === "Slifer's Production Crew") {
+                            var dailyXP = dXP(20, 80)
+                            var dailyPoints = dXP(3, 6)
+                        } else {
+                            var dailyXP = dXP(25, 100)
+                            var dailyPoints = dXP(1, 8)
+                        }
             }
 
-            // check the 24 hour cooldown
             if (authorData && authorData.dailyCD) {
                 const then = new Date(authorData.dailyCD)
 
@@ -71,7 +74,6 @@ module.exports = {
 
             }
 
-            // increment points and save
             const pResult = await fSchema.findOneAndUpdate({
                 guildID,
                 userID: userID,

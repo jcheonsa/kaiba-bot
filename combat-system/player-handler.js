@@ -1,30 +1,29 @@
-// handles basic player calculations
+// const enemy = require('./mob-handler')
+// const combat = require('./combat-handler')
+
 module.exports = {
 
     // calculate user damage
-    calcUserDMG: (message, combatEmbed, adReaction, userData, userHP, userMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK, turn, minDMG, maxDMG,) => {
+    calcUserDMG: (message, combatEmbed, adReaction, user, mob, turn) => {
 
         const enemy = require('./mob-handler')
         const combat = require('./combat-handler')
 
-        let { class: className } = userData
-        let { mobName, mp: mobMP, description: mobDESC, img: mobIMG } = mobData
+        let { minDMG, maxDMG, } = user
 
-        let newUserMP = userMP
-
-        var scaledMaxDMG = Math.floor(maxDMG) + Math.floor(userSTR * 0.7) + Math.floor(userDEX * 0.5)
-        var scaledMinDMG = Math.floor(minDMG) + Math.floor(userSTR * 0.5) + Math.floor(userDEX * 0.7)
+        var scaledMaxDMG = Math.floor(maxDMG) + Math.floor(user.STR * 0.7) + Math.floor(user.DEX * 0.5)
+        var scaledMinDMG = Math.floor(minDMG) + Math.floor(user.STR * 0.5) + Math.floor(user.DEX * 0.7)
         // calculate potential damage
         var userDMG = Math.floor(Math.random() * (scaledMaxDMG - scaledMinDMG) + scaledMinDMG) - Math.floor(Math.random() * 15);
 
         // calculate mob damage
-        let mobDMG = enemy.calcMobDMG(userData, userHP, newUserMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK,)
+        let mobDMG = enemy.calcMobDMG(user, mob,)
 
         // calculate user & mob accuracy
-        let userACC = module.exports.calcUserACC(userData, userHP, newUserMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK,)
-        let mobACC = enemy.calcMobACC(userData, userHP, newUserMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK,)
+        let userACC = module.exports.calcUserACC(user, mob,)
+        let mobACC = enemy.calcMobACC(user, mob,)
 
-        combatEmbed.setDescription(`You deal **${userDMG}** damage with your weapon. **${mobName}** does **${mobDMG}** damage!`)
+        combatEmbed.setDescription(`You deal **${userDMG}** damage with your weapon. **${mob.Name}** does **${mobDMG}** damage!`)
 
         // if user misses, deal 0 damage
         if (userACC === 0) {
@@ -35,18 +34,15 @@ module.exports = {
         }
 
         return setTimeout(function () {
-            combat.combatProc(message, combatEmbed, adReaction, userData, userHP, newUserMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK, userDMG, mobDMG, turn, minDMG, maxDMG)
+            combat.combatProc(message, combatEmbed, adReaction, user, mob, userDMG, mobDMG, turn)
         }, 1000);
 
     },
 
-    calcUserMagDMG: (message, combatEmbed, adReaction, userData, userHP, userMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK, turn, minDMG, maxDMG) => {
+    calcUserMagDMG: (message, combatEmbed, adReaction, user, mob, turn,) => {
 
         const enemy = require('./mob-handler')
         const combat = require('./combat-handler')
-
-        let { class: className } = userData
-        let { mobName, mp: mobMP, description: mobDESC, img: mobIMG } = mobData
 
         var scaledMaxDMG = Math.floor(100) + Math.floor(userINT * 1.2)
         var scaledMinDMG = Math.floor(30) + Math.floor(userLUK * 0.8)
@@ -54,12 +50,12 @@ module.exports = {
         // calculate potential damage
         var userDMG = Math.floor(Math.random() * (scaledMaxDMG - scaledMinDMG) + scaledMinDMG) - Math.floor(Math.random() * 10);
 
-        let mobDMG = enemy.calcMobDMG(userData, userHP, userMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK,)
-        let mobACC = enemy.calcMobACC(userData, userHP, userMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK,)
+        let mobDMG = enemy.calcMobDMG(user, mob, status, mobstatus)
+        let mobACC = enemy.calcMobACC(user, mob, status, mobstatus)
 
         // cantrip mana 
         let mpToSub = Math.floor(Math.random() * (8 - 3))
-        let newUserMP = Math.floor(userMP - mpToSub)
+        let newUserMP = Math.floor(user.MP - mpToSub)
 
         if (mobACC === 0) {
             mobDMG * 0.3
@@ -68,20 +64,20 @@ module.exports = {
         combatEmbed.setDescription(`You casted a basic magic attack for **${userDMG}** damage. You take **${mobDMG}** damage.`)
 
         return setTimeout(function () {
-            combat.combatProc(message, combatEmbed, adReaction, userData, userHP, newUserMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK, userDMG, mobDMG, turn, minDMG, maxDMG)
+            combat.combatProc(message, combatEmbed, adReaction, user, mob, userDMG, mobDMG, turn,)
         }, 1000);
     },
 
     // calculate user accuracy
-    calcUserACC: (userData, userHP, newUserMP, userSTR, userDEX, userINT, userLUK, mobData, mobHP, mobSTR, mobDEX, mobINT, mobLUK,) => {
+    calcUserACC: (user, mob,) => {
 
-        let { class: className } = userData
-        let { mobName, mp: mobMP, description: mobDESC, img: mobIMG } = mobData
+        var { userStats: status } = user
+        var { mobStatus: status } = mob
 
         // get user accuracy, scales with DEX and LUK
-        let userACC = Math.floor(100 + (userDEX * 1.2) + userLUK)
+        let userACC = Math.floor(100 + (user.DEX * 1.2) + user.LUK)
         // get mob avoidability, scales with 20% of DEX and 80% of LUK
-        let mobAVD = Math.floor(mobDEX * 0.2) + Math.floor(mobLUK * 0.8)
+        let mobAVD = Math.floor(mob.DEX * 0.2) + Math.floor(mob.LUK * 0.8)
         // calc hit chance by subtracting mobAVD from userACC and getting a percantage
         var hitChance = Math.floor(((userACC - mobAVD) / userACC) * 100)
         // generate random number for hit
@@ -105,7 +101,7 @@ module.exports = {
             case "Mage":
                 combatEmbed.addFields(
                     { name: "Class", value: `${className}`, inline: true },
-                    { name: "Skill", value: `1) **20 MP**: ${spell1} \n 2) **30 MP**: ${spell2} \n 3) **15 MP**: ${spell3} \n 4) **100 MP**: **ULTIMATE ABILITY**`, inline: true },
+                    { name: "Skill", value: `1) **20 MP**: ${spell1} \n 2) **30 MP**: ${spell2} \n 3) **5 MP**: ${spell3} \n 4) **100 MP**: **ULTIMATE ABILITY**`, inline: true },
                     { name: "Attack", value: `Scales with STR/DEX.`, inline: true },
                 )
                 return
@@ -133,7 +129,7 @@ module.exports = {
             case "Thief":
                 combatEmbed.addFields(
                     { name: "Class", value: `${className}`, inline: true },
-                    { name: "Skill", value: `1) **7 - 10 MP**: ${spell1} \n 2) **12 MP**: ${spell2} \n 3) **7 MP**: ${spell3} \n 4) **18 MP**: **ULTIMATE ABILITY**`, inline: true },
+                    { name: "Skill", value: `1) **7 - 10 MP**: ${spell1} \n 2) **8 - 12 MP**: ${spell2} \n 3) **7 MP**: ${spell3} \n 4) **18 MP**: **ULTIMATE ABILITY**`, inline: true },
                     { name: "Attack", value: `Scales with STR/DEX.`, inline: true },
                 )
                 return
@@ -158,10 +154,10 @@ module.exports = {
                     { name: "Attack", value: `Scales with STR/DEX.`, inline: true },
                 )
                 return
-            case "Adept ":
+            case "Adept":
                 combatEmbed.addFields(
                     { name: "Class", value: `${className}`, inline: true },
-                    { name: "Skill", value: `1) **50 MP**: ${spell1} \n 2) **35 MP**: ${spell2} \n 3) **40 MP**: ${spell3} \n 4) **120 MP**: **ULTIMATE ABILITY**`, inline: true },
+                    { name: "Skill", value: `1) **50 MP**: ${spell1} \n 2) **25 MP**: ${spell2} \n 3) **20 MP**: ${spell3} \n 4) **120 MP**: **ULTIMATE ABILITY**`, inline: true },
                     { name: "Attack", value: `Scales with STR/DEX.`, inline: true },
                 )
                 return
@@ -175,7 +171,7 @@ module.exports = {
             case "Dark Mage":
                 combatEmbed.addFields(
                     { name: "Class", value: `${className}`, inline: true },
-                    { name: "Skill", value: `1) **80 MP**: ${spell1} \n 2) **50 MP**: ${spell2} \n 3) **60 MP**: ${spell3} \n 4) **66 MP**: **ULTIMATE ABILITY**`, inline: true },
+                    { name: "Skill", value: `1) **80 MP**: ${spell1} \n 2) **60 MP**: ${spell2} \n 3) **50 MP**: ${spell3} \n 4) **66 MP**: **ULTIMATE ABILITY**`, inline: true },
                     { name: "Attack", value: `Scales with STR/DEX.`, inline: true },
                 )
                 return
@@ -224,7 +220,7 @@ module.exports = {
             case "Mercenary":
                 combatEmbed.addFields(
                     { name: "Class", value: `${className}`, inline: true },
-                    { name: "Skill", value: `1) **12 MP**: ${spell1} \n 2) **10 MP**: ${spell2} \n 3) **15 MP**: ${spell3} \n 4) **20 MP**: **ULTIMATE ABILITY**`, inline: true },
+                    { name: "Skill", value: `1) **12 MP**: ${spell1} \n 2) **100 MP**: ${spell2} \n 3) **15 MP**: ${spell3} \n 4) **20 MP**: **ULTIMATE ABILITY**`, inline: true },
                     { name: "Attack", value: `Scales with STR/DEX.`, inline: true },
                 )
                 return
@@ -232,17 +228,24 @@ module.exports = {
             case "Assassin":
                 combatEmbed.addFields(
                     { name: "Class", value: `${className}`, inline: true },
-                    { name: "Skill", value: `1) **  MP**: ${spell1} \n 2) **  MP**: ${spell2} \n 3) **  MP**: ${spell3} \n 4) **  MP**: **ULTIMATE ABILITY**`, inline: true },
+                    { name: "Skill", value: `1) **  MP**: ${spell1} \n 2) **  MP**: ${spell2} \n 3) **8 - 15 MP**: ${spell3} \n 4) **  MP**: **ULTIMATE ABILITY**`, inline: true },
                     { name: "Attack", value: `Scales with STR/DEX.`, inline: true },
                 )
                 return
             case "Egyptian God Acolyte":
                 combatEmbed.addFields(
                     { name: "Class", value: `${className}`, inline: true },
-                    { name: "Skill", value: `1) **20 MP**: ${spell1} \n 2) **10 MP**: ${spell2} \n 3) **8 MP**: ${spell3} \n 4) **100 MP**: **ULTIMATE ABILITY**`, inline: true },
+                    { name: "Skill", value: `1) **20 MP**: ${spell1} \n 2) **10 MP**: ${spell2} \n 3) **35 MP**: ${spell3} \n 4) **100 MP**: **ULTIMATE ABILITY**`, inline: true },
                     { name: "Attack", value: `Scales with STR/DEX.`, inline: true },
                 )
                 return
+
+            case "Adept":
+                combatEmbed.addFields(
+                    { name: "Class", value: `${className}`, inline: true },
+                    { name: "Skill", value: `1) **60 MP**: ${spell1} \n 2) **80 MP**: ${spell2} \n 3) **50 MP**: ${spell3} \n 4) **100 MP**: **ULTIMATE ABILITY**`, inline: true },
+                    { name: "Attack", value: `Scales with STR/DEX.`, inline: true },
+                )
 
         }
 

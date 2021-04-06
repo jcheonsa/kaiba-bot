@@ -1,4 +1,4 @@
-// allows admins to bulk clear messages
+
 module.exports = {
 
   commands: ['clear'],
@@ -6,7 +6,6 @@ module.exports = {
   maxArgs: 1,
   expectedArgs: '<num1>',
   description: "Allows admins to mass clear chat logs",
-  permissions: ['ADMINISTRATOR'],
   callback: (message, args) => {
     try {
 
@@ -22,5 +21,5 @@ module.exports = {
 
     }
   },
-
+  permissions: ['ADMINISTRATOR'],
 }

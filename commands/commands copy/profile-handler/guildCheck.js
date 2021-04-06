@@ -1,10 +1,12 @@
-// get information on your faction
 const fSchema = require('../../../schemas/factionSchema')
 const Discord = require('discord.js')
 const { raRole, obRole, slRole } = require('../../../config.json')
 
-module.exports = {
+// module.exports.check = async (message) => {
 
+
+
+module.exports = {
     commands: ["myguild", "myfaction"],
     description: "Returns information on your current faction.",
     cooldown: 25,
@@ -105,7 +107,6 @@ module.exports = {
         }
     }
 }
-
 function findGuild(member, guildEmbed, userData, pointsEmoji, fameEmoji) {
     return new Promise((resolve) => {
         setTimeout(() => {

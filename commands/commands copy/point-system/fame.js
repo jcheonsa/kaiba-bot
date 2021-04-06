@@ -1,4 +1,3 @@
-// users to fame/thank each other for helping out
 const fSchema = require('../../../schemas/factionSchema')
 
 module.exports = {
@@ -8,7 +7,9 @@ module.exports = {
     minArgs: 1,
     expectedArgs: `**<@user-to-fame>**`,
     callback: async (message) => {
+
         const target = message.mentions.users.first()
+
         if (!target) {
             message.reply(`You're faming nobody, you fool.`)
             return;
@@ -18,33 +19,33 @@ module.exports = {
         const guildID = guild.id
         const targetID = target.id
         const authorID = message.author.id
-        const now = new Date()
+
         try {
             if (targetID === authorID) {
                 message.reply('You cannot fame yourself..')
                 return;
             }
-
+            const now = new Date()
             const authorData = await fSchema.findOne({
                 userID: authorID,
-                guildID,
+                guildID
             })
 
-            // 24 hour timer
             if (authorData && authorData.lastFame) {
                 const then = new Date(authorData.lastFame)
 
                 const diff = now.getTime() - then.getTime()
-                const diffHours = Math.round(diff / (1000 * 60 * 60))
-                const remainHours = 24 - diffHours
+                const diffHours = Math.round(diff / (1000 * 60))
+                const remainHours = (24 * 60) - diffHours
+                const remainMtoH = Math.floor(remainHours / 60)
 
-                const hours = 24
+                const hours = 24 * 60
                 if (diffHours <= hours) {
-                    message.reply(`Another **${remainHours}** hour(s) remain before you can fame again.`)
+                    message.reply(`Another **${remainMtoH}** hour(s) or **${remainHours}** minute(s) remain before you can fame again.`)
                     return
                 }
-            }
 
+            }
             // update "lastFame" property for the command sender
             await fSchema.findOneAndUpdate({
                 // find a document that matches this criteria
@@ -56,9 +57,9 @@ module.exports = {
                 guildID,
                 lastFame: now
             }, {
-                upsert: true
+                upsert: true,
+                new: true
             })
-
 
             const result = await fSchema.findOneAndUpdate({
                 userID: targetID,

@@ -1,4 +1,3 @@
-// players choose their factions
 const Discord = require('discord.js')
 const { prefix, lvlChannel, raRole, slRole, obRole } = require('../../../config.json')
 const guildHandler = require('../../../profile-system/models/guild-handler')
@@ -66,8 +65,8 @@ module.exports = {
                 guildHandler.joinSlifer(message, guildID, userID)
                 member.roles.add(slRole)
             }
-        } catch (e) {
-            console.log(e)
+        } finally {
+            console.log("Someone joined a faction.")
         }
     }
 }

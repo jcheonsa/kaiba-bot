@@ -1,47 +1,60 @@
 const Discord = require('discord.js');
-const jobadvProc = require('../../models/class-handler')
+const { raRole, obRole, slRole } = require('../../config.json')
 
 module.exports = {
 
-    async secondRange(client, guildID, userID, lvlChannel, god) {
+    async secondRange(message) {
 
-        try {
+        // try { 
 
-            const oneEmoji = "1️⃣"
-            const twoEmoji = "2️⃣"
-            const threeEmoji = "3️⃣"
-            const fourEmoji = "4️⃣"
-            const intEmoji = client.emojis.cache.find(emoji => emoji.name === "Futaba");
-            const emojis = [oneEmoji, twoEmoji, threeEmoji, fourEmoji]
+        const { client } = message
+        const member = message.member
 
-            var lvl2Embed = new Discord.MessageEmbed()
-                .setAuthor("Ranger Second Advancement")
-                .setDescription(`Use the reactions to navigate through the advancement menu. \n
+        const oneEmoji = "1️⃣"
+        const twoEmoji = "2️⃣"
+        const threeEmoji = "3️⃣"
+        const fourEmoji = "4️⃣"
+        const intEmoji = client.emojis.cache.find(emoji => emoji.name === "Futaba");
+        const emojis = [oneEmoji, twoEmoji, threeEmoji, fourEmoji]
+
+        if (member.roles.cache.has(raRole)) {
+            var god = "Ra"
+        }
+        if (member.roles.cache.has(obRole)) {
+            var god = "Obelisk"
+        }
+        if (member.roles.cache.has(slRole)) {
+            var god = "Slifer"
+        }
+
+        var lvl2Embed = new Discord.MessageEmbed()
+            .setAuthor("Mage Second Advancement")
+            .setDescription(`Use the reactions to navigate through the advancement menu. \n
             Please wait for the reactions to load slowly before clicking. They take some time. \n
             There are 4 branches for your class. Look through each page, and when you decide on the one you want, press the "✅".`)
 
-            let confirm = await lvlChannel.send(lvl2Embed)
+        let confirm = await message.channel.send(lvl2Embed)
 
-            await confirm.react(intEmoji)
+        await confirm.react(intEmoji)
 
-            let reactionFilter = (reaction, user) =>
-                user.id === userID && !user.bot;
-            let reaction = (
-                await confirm.awaitReactions(reactionFilter, {
-                    max: 1,
-                    time: 80000
-                })
-            ).first();
+        let reactionFilter = (reaction, user) =>
+            user.id === message.author.id && !user.bot;
+        let reaction = (
+            await confirm.awaitReactions(reactionFilter, {
+                max: 1,
+            })
+        ).first();
 
-            setArcher(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+        setArcher(reaction, lvl2Embed, emojis, god, message)
 
-        } catch {
-            console.log("Stopped listening")
-        }
+        // } catch {
+
+        //     console.log("Stopped listening")
+
+        // }
     }
 }
-
-async function setArcher(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel) {
+async function setArcher(adReaction, lvl2Embed, emojis, god, message) {
 
     try {
         lvl2Embed.setColor("RANDOM")
@@ -59,7 +72,7 @@ async function setArcher(adReaction, lvl2Embed, emojis, god, guildID, userID, lv
                     name: "Internal Bleeding", value: `All damage you deal will cause your target to bleed, will deal an additional roll of damage.`
                 },
                 {
-                    name: "Rapid Fire", value: `Fire a flurry of arrows.`
+                    name: "Approaching Velocity", value: `If some guy try to run, you run faster.`
                 },
             )
             .setFooter(`Page 1 of 4`)
@@ -67,14 +80,14 @@ async function setArcher(adReaction, lvl2Embed, emojis, god, guildID, userID, lv
         adReaction.message.edit(lvl2Embed)
 
         let confirm = await adReaction.message.edit(lvl2Embed)
+
         await confirm.react(emojis[0])
         await confirm.react(emojis[1])
         await confirm.react(emojis[2])
         await confirm.react(emojis[3])
-        await confirm.react("✅")
 
         let reactionFilter = (reaction, user) =>
-            user.id === userID && !user.bot;
+            user.id === message.author.id && !user.bot;
         let reaction = (
             await confirm.awaitReactions(reactionFilter, {
                 max: 1,
@@ -83,28 +96,27 @@ async function setArcher(adReaction, lvl2Embed, emojis, god, guildID, userID, lv
 
         if (reaction.emoji.name === emojis[0]) {
             lvl2Embed.fields = [];
-            setArcher(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setArcher(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[1]) {
             lvl2Embed.fields = [];
-            setGun(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setGun(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[2]) {
             lvl2Embed.fields = [];
-            setTrap(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setTrap(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[3]) {
             lvl2Embed.fields = [];
-            setRider(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
-        } else if (reaction.emoji.name === "✅") {
-            var job = "Archer"
-            jobadvProc.setClass(lvlChannel, job, guildID, userID)
-
+            setRider(adReaction, lvl2Embed, emojis, god, message)
         }
+
     } catch {
+
         console.log("Stopped listening")
+
     }
 
 }
 
-async function setGun(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel) {
+async function setGun(adReaction, lvl2Embed, emojis, god, message) {
 
     try {
         lvl2Embed.setColor("RANDOM")
@@ -122,7 +134,7 @@ async function setGun(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlCh
                     name: "Quickdraw", value: `Lay down a trap, if your target attempts to basic attack, roll to see if you interrupt and attack them.`
                 },
                 {
-                    name: "Paced Attack", value: `Empty your magazine on your target. (3-6 shots)`
+                    name: "Gunslinger Brand", value: `You're kind of a big deal around here. Fame scales your points gain.`
                 },
             )
             .setFooter(`Page 2 of 4`)
@@ -133,10 +145,9 @@ async function setGun(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlCh
         await confirm.react(emojis[1])
         await confirm.react(emojis[2])
         await confirm.react(emojis[3])
-        await confirm.react("✅")
 
         let reactionFilter = (reaction, user) =>
-            user.id === userID && !user.bot;
+            user.id === message.author.id && !user.bot;
         let reaction = (
             await confirm.awaitReactions(reactionFilter, {
                 max: 1,
@@ -145,27 +156,26 @@ async function setGun(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlCh
 
         if (reaction.emoji.name === emojis[0]) {
             lvl2Embed.fields = [];
-            setArcher(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setArcher(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[1]) {
             lvl2Embed.fields = [];
-            setGun(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setGun(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[2]) {
             lvl2Embed.fields = [];
-            setTrap(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setTrap(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[3]) {
             lvl2Embed.fields = [];
-            setRider(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
-        } else if (reaction.emoji.name === "✅") {
-            var job = "Gunslinger"
-            jobadvProc.setClass(lvlChannel, job, guildID, userID)
-
+            setRider(adReaction, lvl2Embed, emojis, god, message)
         }
+
     } catch {
+
         console.log("Stopped listening")
+
     }
 }
 
-async function setTrap(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel) {
+async function setTrap(adReaction, lvl2Embed, emojis, god, message) {
     try {
         lvl2Embed.setColor("RANDOM")
             .setTitle("The Trapper")
@@ -191,10 +201,9 @@ async function setTrap(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlC
         await confirm.react(emojis[1])
         await confirm.react(emojis[2])
         await confirm.react(emojis[3])
-        await confirm.react("✅")
 
         let reactionFilter = (reaction, user) =>
-            user.id === userID && !user.bot;
+            user.id === message.author.id && !user.bot;
         let reaction = (
             await confirm.awaitReactions(reactionFilter, {
                 max: 1,
@@ -203,36 +212,35 @@ async function setTrap(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlC
 
         if (reaction.emoji.name === emojis[0]) {
             lvl2Embed.fields = [];
-            setArcher(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setArcher(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[1]) {
             lvl2Embed.fields = [];
-            setGun(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setGun(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[2]) {
             lvl2Embed.fields = [];
-            setTrap(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setTrap(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[3]) {
             lvl2Embed.fields = [];
-            setRider(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
-        } else if (reaction.emoji.name === "✅") {
-            var job = "Trapper"
-            jobadvProc.setClass(lvlChannel, job, guildID, userID)
-
+            setRider(adReaction, lvl2Embed, emojis, god, message)
         }
+
     } catch {
+
         console.log("Stopped listening")
+
     }
 }
 
-async function setRider(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel) {
+async function setRider(adReaction, lvl2Embed, emojis, god, message) {
     try {
         lvl2Embed.setColor("RANDOM")
-            .setTitle("Raider")
+            .setTitle("The Raider")
             .setImage('https://static.wikia.nocookie.net/yugioh/images/9/9d/Athena-SR05-EN-C-1E.png/revision/latest?cb=20180120012001')
-            .setDescription(`**Raiden** \n
+            .setDescription(`**The  Raider** has an other-worldly connection to nature and the spirits. That's all I can come up with so far. \n
             Branches into the **Spirit Shifter** and the **Beast Rider**`)
             .addFields(
                 {
-                    name: `Blood Pact`, value: `Receive a Spirit Beast Guardian. It's form depends on your Egyptian God. Daily XP/Points gain up.`
+                    name: `${god}'s Blood Pact`, value: `Receive a Spirit Beast Guardian. It's form depends on your Egyptian God. Daily XP/Points gain up.`
                 },
                 {
                     name: "Maim", value: `You and your Spirit Beast attack in tandem, mortally wounding and debuffing the target. This debuff cannot be cured for 24 hours.`
@@ -245,14 +253,14 @@ async function setRider(adReaction, lvl2Embed, emojis, god, guildID, userID, lvl
         adReaction.message.edit(lvl2Embed)
 
         let confirm = await adReaction.message.edit(lvl2Embed)
+
         await confirm.react(emojis[0])
         await confirm.react(emojis[1])
         await confirm.react(emojis[2])
         await confirm.react(emojis[3])
-        await confirm.react("✅")
 
         let reactionFilter = (reaction, user) =>
-            user.id === userID && !user.bot;
+            user.id === message.author.id && !user.bot;
         let reaction = (
             await confirm.awaitReactions(reactionFilter, {
                 max: 1,
@@ -261,23 +269,21 @@ async function setRider(adReaction, lvl2Embed, emojis, god, guildID, userID, lvl
 
         if (reaction.emoji.name === emojis[0]) {
             lvl2Embed.fields = [];
-            setArcher(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setArcher(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[1]) {
             lvl2Embed.fields = [];
-            setGun(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setGun(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[2]) {
             lvl2Embed.fields = [];
-            setTrap(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setTrap(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[3]) {
             lvl2Embed.fields = [];
-            setRider(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
-        } else if (reaction.emoji.name === "✅") {
-            var job = "Beast Tamer"
-            console.log("meme")
-            jobadvProc.setClass(lvlChannel, job, guildID, userID)
-
+            setRider(adReaction, lvl2Embed, emojis, god, message)
         }
+
     } catch {
+
         console.log("Something went wrong")
+
     }
 }

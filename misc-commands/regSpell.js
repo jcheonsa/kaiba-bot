@@ -1,5 +1,5 @@
-// register a new spell into mongo
-const spellSchema = require('../../schemas/spellSchema')
+const Discord = require('discord.js')
+const spellSchema = require('../schemas/spellSchema')
 
 module.exports = {
 
@@ -15,7 +15,7 @@ module.exports = {
         let cost = 5
         let description = "Your training and understanding of a plethora of weapons allows you to adapt quickly. Raise your avoidability."
 
-        await spellSchema.findOneAndUpdate({
+        const spellData = await spellSchema.findOneAndUpdate({
             spellName
         },
             {
@@ -30,7 +30,8 @@ module.exports = {
         )
 
         message.reply(`You have registered **${spellName}** into the spell db.`)
-
     }
+
+
 
 }

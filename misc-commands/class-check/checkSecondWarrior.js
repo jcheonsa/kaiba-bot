@@ -1,11 +1,15 @@
 const Discord = require('discord.js');
-const jobadvProc = require('../../models/class-handler')
+const { raRole, obRole, slRole } = require('../../config.json')
 
 module.exports = {
 
-    async secondMage(client, guildID, userID, lvlChannel, god) {
+    async secondWarrior(message) {
 
         try {
+
+
+            const { client } = message
+            const member = message.member
 
             const oneEmoji = "1️⃣"
             const twoEmoji = "2️⃣"
@@ -14,52 +18,63 @@ module.exports = {
             const intEmoji = client.emojis.cache.find(emoji => emoji.name === "Futaba");
             const emojis = [oneEmoji, twoEmoji, threeEmoji, fourEmoji]
 
+            if (member.roles.cache.has(raRole)) {
+                var god = "Ra"
+            }
+            if (member.roles.cache.has(obRole)) {
+                var god = "Obelisk"
+            }
+            if (member.roles.cache.has(slRole)) {
+                var god = "Slifer"
+            }
+
             var lvl2Embed = new Discord.MessageEmbed()
                 .setAuthor("Mage Second Advancement")
                 .setDescription(`Use the reactions to navigate through the advancement menu. \n
             Please wait for the reactions to load slowly before clicking. They take some time. \n
             There are 4 branches for your class. Look through each page, and when you decide on the one you want, press the "✅".`)
 
-            let confirm = await lvlChannel.send(lvl2Embed)
+            let confirm = await message.channel.send(lvl2Embed)
 
             await confirm.react(intEmoji)
 
             let reactionFilter = (reaction, user) =>
-                user.id === userID && !user.bot;
+                user.id === message.author.id && !user.bot;
             let reaction = (
                 await confirm.awaitReactions(reactionFilter, {
                     max: 1,
-                    time: 80000
                 })
             ).first();
 
-            setAdept(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setGuard(reaction, lvl2Embed, emojis, god, message)
 
         } catch {
+
             console.log("Stopped listening")
+
         }
     }
 }
 
-async function setAdept(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel) {
+async function setGuard(adReaction, lvl2Embed, emojis, god, message) {
 
     try {
+
         lvl2Embed.setColor("RANDOM")
-            .setTitle("The Mage Adept")
-            .setImage('https://static.wikia.nocookie.net/yugioh/images/5/5b/CyberseMagician-MP19-EN-R-1E.png/revision/latest?cb=20200121190607')
-            .setDescription(`**The Mage Adept** \n
-            Your power comes from within.
-    \n
-    Branches into the **Chaos Elementalist** and the **Druid**`)
+            .setTitle("The Guardian")
+            .setImage('https://static.wikia.nocookie.net/yugioh/images/e/e8/GuardianofFelgrand-SR02-EN-C-1E.png/revision/latest/scale-to-width-down/459?cb=20160706182319')
+            .setDescription(`**A good defense is a good offense.** The Guardian's faith is in the more pragmatic things - confident in what they can directly interact with. Through hardhsip, pain and discipline, you too have built up your reputation as a reliabl and indomitable force. \n
+            Towering over the offensive lines, keeping oppressive fire at bay, and soaking in missiles; you are a mountain that will overwhelm your opponents. \n
+            Branches into the **Sentinel** and the **Tower**`)
             .addFields(
                 {
-                    name: "Mystical Space Typhoon", value: `With the power of storms, prevent the target from casting spells and every attempt will cause them to take damage.`
+                    name: "Swords of Revealing Light", value: `Diplomacy reduces incoming damage to 1/10th for the next 2 hits.`
                 },
                 {
-                    name: "Raigeki", value: `Elemental powers course through your veins uncontrollably, deal big damage, but take recoil.`
+                    name: "My Body as a Shield", value: `Redirect damage taken by ally to you.`
                 },
                 {
-                    name: "Ice Barrier", value: `If you are attacked, the very moisture in the air reduces the damage.`
+                    name: "Block Attack", value: `Completely blocks 1 attack.`
                 },
             )
             .setFooter(`Page 1 of 4`)
@@ -67,14 +82,14 @@ async function setAdept(adReaction, lvl2Embed, emojis, god, guildID, userID, lvl
         adReaction.message.edit(lvl2Embed)
 
         let confirm = await adReaction.message.edit(lvl2Embed)
+
         await confirm.react(emojis[0])
         await confirm.react(emojis[1])
         await confirm.react(emojis[2])
         await confirm.react(emojis[3])
-        await confirm.react("✅")
 
         let reactionFilter = (reaction, user) =>
-            user.id === userID && !user.bot;
+            user.id === message.author.id && !user.bot;
         let reaction = (
             await confirm.awaitReactions(reactionFilter, {
                 max: 1,
@@ -83,47 +98,42 @@ async function setAdept(adReaction, lvl2Embed, emojis, god, guildID, userID, lvl
 
         if (reaction.emoji.name === emojis[0]) {
             lvl2Embed.fields = [];
-            setAdept(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setGuard(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[1]) {
             lvl2Embed.fields = [];
-            setSummoner(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setMA(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[2]) {
             lvl2Embed.fields = [];
-            setDM(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setWM(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[3]) {
             lvl2Embed.fields = [];
-            setEA(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
-        } else if (reaction.emoji.name === "✅") {
-            var job = "Adept"
-            jobadvProc.setClass(lvlChannel, job, guildID, userID)
-
-
+            setEA(adReaction, lvl2Embed, emojis, god, message)
         }
+
     } catch {
+
         console.log("Stopped listening")
+
     }
 
 }
 
-async function setSummoner(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel) {
+async function setMA(adReaction, lvl2Embed, emojis, god, message) {
 
     try {
         lvl2Embed.setColor("RANDOM")
-            .setTitle("The Ritual Summoner")
-            .setImage('https://static.wikia.nocookie.net/yugioh/images/4/4a/AleistertheInvoker-SHVA-EN-ScR-1E.png/revision/latest/scale-to-width-down/300?cb=20180817184137')
-            .setDescription(`**The Ritual Summoners** \n
-            Your power was something you worked hard to develop, you studied how to summon duel monsters to your aid.
-    \n
-    Branches into the **Necromancer (spooky)** and the **Evoker (non-spooky)**`)
+            .setTitle("The Martial Artist")
+            .setImage('https://static.wikia.nocookie.net/yugioh/images/7/7b/ComboMaster-CDIP-EN-R-1E.jpg/revision/latest?cb=20070219022112')
+            .setDescription(`You have embarked on a long journey to hone your body and master the martial arts of your ancestors.\n
+       Though the world has moved on to equip the weak with gunpowder, duel monsters, and sorcery, you represent an ever-present guardian force that relies on the mastery of the human body.
+\n 
+Branches into the **The Body Cultivator**, the **The Sword Cultivator**, and the **Daoist Cultivator**`)
             .addFields(
                 {
-                    name: "Summoning Ritual", value: `If 5 members of your faction are present for this command within 10 seconds, +100 exp to all present members. **1 Week Cooldown**`
+                    name: "Trigram Fist of the Fiery Phoenix", value: `A four-punch combo that increases in strength with each successive strike. The last strike lights the air around your fist on fire to land a fiery blow.`
                 },
                 {
-                    name: "Monster Reborn", value: `If your summon dies, it doesn't!`
-                },
-                {
-                    name: "Polymerization", value: `You begin to dabble with the anatomy and physiology of monsters of different genuses, fuse two of your summons into one big summon.`
+                    name: "Fleeting Shadow", value: `You move your feet in rapid succession, confusing your enemy and increasing your evasion.`
                 },
             )
             .setFooter(`Page 2 of 4`)
@@ -134,10 +144,9 @@ async function setSummoner(adReaction, lvl2Embed, emojis, god, guildID, userID, 
         await confirm.react(emojis[1])
         await confirm.react(emojis[2])
         await confirm.react(emojis[3])
-        await confirm.react("✅")
 
         let reactionFilter = (reaction, user) =>
-            user.id === userID && !user.bot;
+            user.id === message.author.id && !user.bot;
         let reaction = (
             await confirm.awaitReactions(reactionFilter, {
                 max: 1,
@@ -146,59 +155,60 @@ async function setSummoner(adReaction, lvl2Embed, emojis, god, guildID, userID, 
 
         if (reaction.emoji.name === emojis[0]) {
             lvl2Embed.fields = [];
-            setAdept(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setGuard(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[1]) {
             lvl2Embed.fields = [];
-            setSummoner(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setMA(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[2]) {
             lvl2Embed.fields = [];
-            setDM(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setWM(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[3]) {
             lvl2Embed.fields = [];
-            setEA(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
-        } else if (reaction.emoji.name === "✅") {
-            var job = "Summoner"
-            jobadvProc.setClass(lvlChannel, job, guildID, userID)
-
+            setEA(adReaction, lvl2Embed, emojis, god, message)
         }
+
     } catch {
+
         console.log("Stopped listening")
+
     }
 }
 
-async function setDM(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel) {
+async function setWM(adReaction, lvl2Embed, emojis, god, message) {
+
     try {
+
         lvl2Embed.setColor("RANDOM")
-            .setTitle("The Dark Magician")
-            .setDescription(`**The Dark Magician** \n
-            Something dark defiles the power within you. The **Dark Magician** possesses powers akin to the monsters of old. Perhaps your body, mind and soul were unwittingly sold to darker forces, granting you abilities beyond mortal comprehension. Or maybe you deliberately sought after this might of your own accord. \n
-    With attacks like *Dark Magic Attack* and *Dark Magic Inheritance*, those who wield this power are often found wandering in isolation because of it's dark and uncontrollable nature. The question remains still, what *kind* of dark powers do you possess and where *do* they come from? And will you use them for good or for something more sinister?
-    \n
-    Branches into the **Magician of Black Chaos** and the **Hemomancer**`)
-            .setImage('https://ygoprodeck.com/pics/46986414.jpg')
+            .setTitle("The Weapon Master")
+            .setDescription(`**Jack of all trades, master of none.** The weaponmaster is a whirlwind of blades, staves, arrows, and bolts. \n
+        An axe carved deep into a man's head, a sword twisted in the belly of an assassin, an arrow blooming forth from a monster's head, or even a spoon down someone's throat. \n
+        Beware the Weapons Master, for even the humblest of objects can become the deadliest of weapons in the right hands. \n
+        Branches into the **Specialist**`)
+            .setImage('https://static.wikia.nocookie.net/yugioh/images/f/f9/TheHunterwith7Weapons-LOD-NA-C-1E.jpg/revision/latest?cb=20061119233723')
             .addFields(
                 {
-                    name: "Dark Magic Attack", value: `Steal (1-3) point(s) from any random user. **96 Hour Cooldown**`
+                    name: "Offensive Stance", value: `You see an opening and want to press into it rather recklessly, increasing damage but reducing your defense.`
                 },
                 {
-                    name: "Dark Magic Inheritance", value: `Increase XP gain by 200. **48 Hour Cooldown**`
+                    name: "Patient Bait", value: `Taunts target while in a neutral stance, prepare for return damage (reduces damage taken by 10th), when attacked, redirect 25% of their attack or 33% of your attack (whichever is lower) back at the opponent.`
                 },
                 {
-                    name: "Crush Card Virus", value: `Constrict your target with a wave of dark tendrils. On their turn, they must roll to see if they can even take their turn.`
+                    name: "Paced Attack", value: `Attack with 30% of regular attack damage (1-6) times.`
+                },
+                {
+                    name: "Improvisation", value: `Your training and understanding of a plethora of martial weapons allows you to adapt to combat quickyl ,you are able to switch your offense and defnse.`
                 },
             )
             .setFooter(`Page 3 of 4`)
         adReaction.message.edit(lvl2Embed)
-
         let confirm = await adReaction.message.edit(lvl2Embed)
         await confirm.react(emojis[0])
         await confirm.react(emojis[1])
         await confirm.react(emojis[2])
         await confirm.react(emojis[3])
-        await confirm.react("✅")
 
         let reactionFilter = (reaction, user) =>
-            user.id === userID && !user.bot;
+            user.id === message.author.id && !user.bot;
         let reaction = (
             await confirm.awaitReactions(reactionFilter, {
                 max: 1,
@@ -207,35 +217,36 @@ async function setDM(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlCha
 
         if (reaction.emoji.name === emojis[0]) {
             lvl2Embed.fields = [];
-            setAdept(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setGuard(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[1]) {
             lvl2Embed.fields = [];
-            setSummoner(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setMA(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[2]) {
             lvl2Embed.fields = [];
-            setDM(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setWM(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[3]) {
             lvl2Embed.fields = [];
-            setEA(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
-        } else if (reaction.emoji.name === "✅") {
-            var job = "Dark Mage"
-            jobadvProc.setClass(lvlChannel, job, guildID, userID)
-
+            setEA(adReaction, lvl2Embed, emojis, god, message)
         }
+
     } catch {
+
         console.log("Stopped listening")
+
     }
 }
 
-async function setEA(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel) {
+async function setEA(adReaction, lvl2Embed, emojis, god, message) {
+
     try {
+
         lvl2Embed.setColor("RANDOM")
-            .setTitle("The Egyptian God Acolyte")
-            .setImage('https://ygoprodeck.com/pics/61528025.jpg')
-            .setDescription(`**The Egyptian God Acolyte** \n
+            .setTitle("The Egyptian God Crusader")
+            .setImage('https://static.wikia.nocookie.net/yugioh/images/a/a5/PaladinofFelgrand-OP03-EN-SR-UE.png/revision/latest/scale-to-width-down/300?cb=20170330112958')
+            .setDescription(`**The Crusader** \n
             You were gifted your powers by **${god}** himself. While others are obsessed with personal power and glory, your direct connection with the gods themselves lend favor to the entire faction and allows you to call down the fury of **${god}** (mood permitting). \n
              Patience, perseverance and prayer are your weapons. Carry them as a seal upon your heart as you go to battle everyday.\n
-            Branches into the **Egyptian God Oracle** and the **Egyptian God Zealot**`)
+            Branches into the **Egyptian God Harbinger** and the **Egyptian God Champion**`)
             .addFields(
                 {
                     name: `${god}'s Blessing`, value: `Choose a guildmate, on their next successful daily roll, increase the number of points gained by (0-2). **48 Hour Cooldown**`
@@ -251,14 +262,14 @@ async function setEA(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlCha
         adReaction.message.edit(lvl2Embed)
 
         let confirm = await adReaction.message.edit(lvl2Embed)
+
         await confirm.react(emojis[0])
         await confirm.react(emojis[1])
         await confirm.react(emojis[2])
         await confirm.react(emojis[3])
-        await confirm.react("✅")
 
         let reactionFilter = (reaction, user) =>
-            user.id === userID && !user.bot;
+            user.id === message.author.id && !user.bot;
         let reaction = (
             await confirm.awaitReactions(reactionFilter, {
                 max: 1,
@@ -267,23 +278,21 @@ async function setEA(adReaction, lvl2Embed, emojis, god, guildID, userID, lvlCha
 
         if (reaction.emoji.name === emojis[0]) {
             lvl2Embed.fields = [];
-            setAdept(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setGuard(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[1]) {
             lvl2Embed.fields = [];
-            setSummoner(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setMA(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[2]) {
             lvl2Embed.fields = [];
-            setDM(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
+            setWM(adReaction, lvl2Embed, emojis, god, message)
         } else if (reaction.emoji.name === emojis[3]) {
             lvl2Embed.fields = [];
-            setEA(reaction, lvl2Embed, emojis, god, guildID, userID, lvlChannel)
-        } else if (reaction.emoji.name === "✅") {
-            var job = "Egyptian God Acolyte"
-            console.log("meme")
-            jobadvProc.setClass(lvlChannel, job, guildID, userID)
-
+            setEA(adReaction, lvl2Embed, emojis, god, message)
         }
+
     } catch {
+
         console.log("Something went wrong")
+
     }
 }

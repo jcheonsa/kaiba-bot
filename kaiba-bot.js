@@ -94,14 +94,32 @@ client.on("message", async (message) => {
       combat.setCombat(message)
       break;
 
-    // case "test":
-    //   const player = require('./combat-system/player-handler')
-    //   var userData = { dex: 20, luk: 30 }
-    //   var mobData = { dex: 50, luk: 10 }
-    //   const userACC = await player.calcUserACC(userData, mobData)
+    case "test":
+      const player = require('./combat-system/player-handler')
+      var userData = { dex: 20, luk: 30 }
+      var mobData = { dex: 50, luk: 10 }
+      const userACC = await player.calcUserACC(userData, mobData)
 
-    //   console.log(`User Acc ${userACC}`)
-    //   break;
+      console.log(`User Acc ${userACC}`)
+      break;
+
+    case "mage":
+      var test = require('./misc-commands/class-check/checkSecondMage')
+      test.secondMage(message)
+      break;
+
+    case "warrior":
+      var test1 = require('./misc-commands/class-check/checkSecondWarrior')
+      test1.secondWarrior(message)
+      break;
+    case "ranger":
+      var test2 = require('./misc-commands/class-check/checkSecondRange')
+      test2.secondRange(message)
+      break;
+    case "thief":
+      var test3 = require('./misc-commands/class-check/checkSecondThief')
+      test3.secondThief(message)
+      break;
 
     // server information
     case "server":
