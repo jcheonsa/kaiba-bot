@@ -26,9 +26,6 @@ module.exports = {
             function dXP(min, max) {
                 return Math.floor(Math.random() * (max - min)) + min;
             }
-            // daily reward random xp from 35 - 75
-
-            // daily reward random points from 1 to 10
 
             // set up 24 hour CD timer for daily
             const now = new Date()
@@ -38,10 +35,11 @@ module.exports = {
                 userID: userID,
             })
 
+            // different daily rewards for each guild
             if (authorData && authorData.faction) {
                 if (authorData.faction === "Ra's Giga Chickens") {
                     var dailyXP = dXP(40, 80)
-                    var dailyPoints = dXP(4, 8)
+                    var dailyPoints = dXP(4, 7)
 
                 } else
                     if (authorData.faction === "Obelisk's Tormentors") {
@@ -50,11 +48,11 @@ module.exports = {
                     }
                     else
                         if (authorData.faction === "Slifer's Production Crew") {
-                            var dailyXP = dXP(20, 80)
-                            var dailyPoints = dXP(3, 6)
+                            var dailyXP = dXP(30, 70)
+                            var dailyPoints = dXP(2, 8)
                         } else {
                             var dailyXP = dXP(25, 100)
-                            var dailyPoints = dXP(1, 8)
+                            var dailyPoints = dXP(2, 8)
                         }
             }
 

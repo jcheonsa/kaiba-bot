@@ -1,12 +1,12 @@
-// class advancement module
 const fSchema = require('../../schemas/factionSchema')
 
+// handles all changes to user class
 module.exports = {
 
     async setClass(lvlChannel, job, guildID, userID) {
         try {
 
-            await fSchema.updateOne({
+            const userData = await fSchema.updateOne({
                 guildID,
                 userID,
             }, {

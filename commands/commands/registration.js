@@ -25,9 +25,8 @@ module.exports = {
             className: authorData.class
         })
 
-
+        // get default class data from corresponding schema
         let { className, hp, mp, str, dex, int, luk, spell1, spell2, spell3, abv } = classData
-
 
         let embed = new Discord.MessageEmbed()
             .setTitle("Stats Check")
@@ -44,6 +43,7 @@ module.exports = {
         message.channel.send(embed)
         message.reply("Registered for Duelist Kingdom demo")
 
+        // attach stats to the user and not just class
         await classSchema.findOneAndUpdate({
             guildID,
             userID,
@@ -95,4 +95,4 @@ async function registerStats(className, hp, mp, str, dex, int, luk) {
     } catch (e) {
         console.log(e)
     }
-} 
+}

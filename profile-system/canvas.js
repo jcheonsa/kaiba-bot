@@ -1,8 +1,10 @@
-// customizable user profile card
+// imaging module
 const { createCanvas, loadImage, Canvas } = require("canvas");
 const { MessageAttachment } = require("discord.js");
+const profPars = require("../img-counter");
 const config = require('../config.json')
 
+var fs = require("fs");
 const imgSchema = require('../schemas/imgSchema')
 const fSchema = require('../schemas/factionSchema');
 const mongoose = require("../mongoose");
@@ -19,7 +21,6 @@ module.exports = {
         const guildID = message.guild.id;
         const userID = target.id;
 
-        // get user's Duelist Kingdom RPG data if applicable
         const userData = await fSchema.findOne({
           guildID,
           userID,
@@ -36,7 +37,6 @@ module.exports = {
           console.log("no userData")
         }
 
-        // get user's configured profile information
         const userimgData = await imgSchema.findOne({
           guildID,
           userID,
@@ -57,6 +57,7 @@ module.exports = {
 
         }
 
+        // load the different image assets
         const pIcon = await loadImage('profile-system/image/meso.png');
         const fIcon = await loadImage('profile-system/image/fame.png')
 
@@ -64,7 +65,6 @@ module.exports = {
           member.user.displayAvatarURL({ format: "jpg" })
         );
 
-        // load the different obtainable user badges
         let badge1 = await loadImage(
           `profile-system/image/badges/league.png`
         );
@@ -97,8 +97,7 @@ module.exports = {
         );
         let background = await loadImage(`${BG}`);
 
-        // build the canvas (width, height) in pixels
-        const canvas = createCanvas(1000, 405, "png");
+        const canvas = createCanvas(1000, 405, "png"); // (width, height) in pixels
         const ctx = canvas.getContext("2d");
 
         var gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
@@ -155,7 +154,29 @@ module.exports = {
         ctx.lineWidth = "3";
         ctx.strokeText(`Level ${level} ` + userClass + ` of ` + faction, 300, 135, 640);
         ctx.globalCompositeOperation = "darker";
-        ctx.fillStyle = gradient;
+        if (member.roles.highest.name === "Judas of KPOP") {
+          ctx.fillStyle = gradient;
+        } else if (member.roles.highest.name === "Smash Brothers") {
+          ctx.fillStyle = "#ffffff";
+          ctx.shadowColor = "#008000";
+        } else if (member.roles.highest.name === "Bubble Blowing Double Babies") {
+          ctx.fillStyle = "#ffffff";
+          ctx.shadowColor = "#FF0000";
+        } else if (member.roles.highest.name === "Literally SoCal") {
+          ctx.fillStyle = "#ffffff";
+          ctx.shadowColor = "#FFB6C1";
+        } else if (member.roles.highest.name === "Saucy Bois and Co") {
+          ctx.fillStyle = "#ffffff";
+          ctx.shadowColor = "#00FFFF";
+        } else if (
+          member.roles.highest.name ===
+          "Expat Excommunicado Koryan Peepo V.2 based on a Book by Sapphire"
+        ) {
+          ctx.fillStyle = "#99692f";
+          ctx.shadowColor = "#99692f";
+        } else {
+          ctx.fillStyle = gradient;
+        }
         ctx.shadowBlur = 6;
         ctx.fillText(`Level ${level} ` + userClass + ` of ` + faction, 300, 135, 640);
         ctx.shadowOffsetX = 0;
@@ -164,7 +185,8 @@ module.exports = {
         ctx.shadowcolor = "transparent";
         ctx.globalCompositeOperation = "source-over";
 
-        // dnyamic xp bar
+        // xp bar
+
         ctx.beginPath();
         ctx.lineWidth = 2;
         ctx.globalAlpha = 1;
@@ -176,7 +198,6 @@ module.exports = {
         ctx.fillRect(270, 150, 630, 10)
         ctx.fill();
 
-        // fills up based on how much xp the user has obtained
         ctx.fillStyle = "#fff242";
         ctx.globalAlpha = 0.5;
         ctx.fillRect(270, 150, ((100 / (level * 100 * level)) * xp) * 6.3, 10);
@@ -222,15 +243,31 @@ module.exports = {
         ctx.fillStyle = BGcolor;
         ctx.fillText(member.displayName, 300, 95, 400);
 
-        // avatar thumbnail
-        ctx.shadowColor = "#9969e0";
+        if (member.roles.highest.name === "Judas of KPOP") {
+          ctx.shadowColor = "#e1e384";
+        } else if (member.roles.highest.name === "Smash Brothers") {
+          ctx.shadowColor = "#008000";
+        } else if (member.roles.highest.name === "Bubble Blowing Double Babies") {
+          ctx.shadowColor = "#FF0000";
+        } else if (member.roles.highest.name === "Literally SoCal") {
+          ctx.shadowColor = "#FFB6C1";
+        } else if (member.roles.highest.name === "Saucy Bois and Co") {
+          ctx.shadowColor = "#00FFFF";
+        } else if (
+          member.roles.highest.name ===
+          "Expat Excommunicado Koryan Peepo V.2 based on a Book by Sapphire"
+        ) {
+          ctx.shadowColor = "#99692f";
+        } else {
+          ctx.shadowColor = "#9969e0";
+        }
         ctx.shadowBlur = 20;
         ctx.shadowOffsetX = 7;
         ctx.shadowOffsetY = 6;
         ctx.globalAlpha = 0.0;
         ctx.strokeRect(15, 15, 220, 220);
         ctx.globalAlpha = 1.0;
-        ctx.drawImage(avatar, 25, 25, 200, 200);
+        ctx.drawImage(avatar, 25, 25, 200, 200); // avatar thumbnail
         ctx.shadowBlur = 0;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
@@ -244,7 +281,7 @@ module.exports = {
           ctx.drawImage(raBadge, 865, 25, 95, 95);
         }
 
-        else if (
+        if (
           faction === `Slifer's Production Crew`
         ) {
           let sfBadge = await loadImage('profile-system/image/smsliferB.png');
@@ -252,7 +289,7 @@ module.exports = {
           ctx.drawImage(sfBadge, 865, 25, 95, 95);
         }
 
-        else if (
+        if (
           faction === `Obelisk's Tormentors`
         ) {
           let obBadge = await loadImage('profile-system/image/smobeliskB.png');
@@ -260,7 +297,7 @@ module.exports = {
           ctx.drawImage(obBadge, 865, 25, 95, 95);
         }
 
-        // badge 1
+        // League Badge
         if (
           member.roles.cache.has(config.tftRole) ||
           member.roles.cache.has(config.lolRole)
@@ -276,7 +313,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // badge 2
+        // fighting games
         if (member.roles.cache.has(config.dbfzRole)) {
           ctx.globalAlpha = 1.0
           ctx.shadowBlur = 10;
@@ -297,7 +334,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // badge 3
+        // baby and anime badge
         if (
           member.roles.cache.has(config.bRole) ||
           member.roles.cache.has(config.animeRole)
@@ -313,7 +350,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // badge 4
+        // Arknights Badge
         if (member.roles.cache.has(config.arkRole)) {
           ctx.shadowBlur = 10;
           ctx.shadowOffsetX = 2;
@@ -333,7 +370,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // badge 5
+        // Smash Bros badge
         if (member.roles.cache.has(config.smashRole)) {
           ctx.shadowBlur = 10;
           ctx.shadowOffsetX = 2;
@@ -353,7 +390,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // badge 6
+        // Shooter Badge
         if (member.roles.cache.has(config.shootRole)) {
           ctx.shadowBlur = 10;
           ctx.shadowOffsetX = 2;
@@ -373,7 +410,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // badge 7
+        // expat badge
         if (member.roles.cache.has(config.partyRole)) {
           ctx.globalAlpha = 1.0;
           ctx.drawImage(exBadge, 32, 348, 40, 40);
@@ -386,7 +423,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // badge 8
+        // Nitro Badge
         if (member.roles.cache.has(config.nitroRole)) {
           ctx.globalAlpha = 1.0;
           ctx.drawImage(nitroBadge, 117, 348, 25, 40);
@@ -399,7 +436,7 @@ module.exports = {
           ctx.fill();
         }
 
-        // badge 9
+        // Bot Badge
         if (member.roles.cache.has(config.botRole)) {
           ctx.shadowBlur = 10;
           ctx.shadowOffsetX = 2;
@@ -423,7 +460,6 @@ module.exports = {
 
         message.channel.send(duelistCard);
         return message.channel.stopTyping();
-
       } catch (e) {
         console.log(e)
         return message.channel.stopTyping();
@@ -432,7 +468,6 @@ module.exports = {
     })
   },
 
-  // limit and scale text character length
   applyText: (canvas, text) => {
     const ctx = canvas.getContext("2d");
 
@@ -445,7 +480,6 @@ module.exports = {
     return ctx.font;
   },
 
-  // adjust position of user background to fit to the canvas
   bgMOD: (ctx, background, x, y, w, h, offsetX, offsetY) => {
     if (arguments.length === 2) {
       x = y = 0;

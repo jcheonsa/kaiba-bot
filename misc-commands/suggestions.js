@@ -8,7 +8,7 @@ module.exports = {
     description: "If you have any ideas on how to improve the bot or the server, type them here!",
     maxArgs: 0,
     callback: async (message) => {
-      //  try {
+        try {
             let sEmbed = new Discord.MessageEmbed()
 
                 .setColor("RANDOM")
@@ -32,8 +32,8 @@ module.exports = {
 
                         })
                 });
-        // } catch {
-        //     message.channel.send("Error in processing suggestions.")
-        // }
+        } catch {
+            message.channel.send("Error in processing suggestions.")
+        }
     }
 }

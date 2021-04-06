@@ -1,7 +1,7 @@
-// customization options as an embed
 const { prefix, lolRole, smashRole, dbfzRole, tftRole, animeRole, arkRole, shootRole, dndRole, kpopRole, partyRole } = require('../../config.json')
 const Discord = require('discord.js')
 
+// handles all changes to user roles
 module.exports.rolesOperator = async (message) => {
 
     const member = message.member

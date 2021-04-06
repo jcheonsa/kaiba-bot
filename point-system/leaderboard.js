@@ -1,9 +1,9 @@
-// get points for the leaderboard
 const mongo = require('../mongoose')
 const factionSchema = require('../schemas/factionSchema')
 
 const pointsCache = {}
 
+// sums all user points to get guild point total
 module.exports.addPoints = async (guildID, userID, points) => {
     return await mongo().then(async (mongoose) => {
         try {
@@ -24,13 +24,13 @@ module.exports.addPoints = async (guildID, userID, points) => {
 
             return result.points
 
-        } catch (e) {
-            console.log(e)
-            mongoose.connection.close();
+        } finally {
+            mongoose.connection.close()
         }
     })
 }
 
+// reflect points on leaderboard
 module.exports.getPoints = async (guildID, userID) => {
 
     return await mongo().then(async (mongoose) => {
@@ -59,9 +59,8 @@ module.exports.getPoints = async (guildID, userID) => {
 
             return points
 
-        } catch (e) {
-            console.log(e)
-            mongoose.connection.close();
+        } finally {
+            mongoose.connection.close()
         }
     })
 }

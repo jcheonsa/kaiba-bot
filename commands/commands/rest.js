@@ -39,7 +39,7 @@ module.exports = {
                 new: true,
             })
 
-        if (member.id === `113509252496146432`) {
+        if (member.id === `113509252496146432` || member.name === `Thomas`) {
             return message.reply(`You get some of that mango habanero (fkin degen).
                 ✨**+${healed} HP** & **+ ${mpHealed} MP**✨`)
         }

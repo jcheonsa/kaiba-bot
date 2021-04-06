@@ -3,6 +3,7 @@ const Discord = require("discord.js")
 const { prefix } = require('../../config.json')
 const factionSchema = require("../../schemas/factionSchema")
 
+// handles all changes to user guild
 module.exports = {
 
     async joinRa(message, guildID, userID) {

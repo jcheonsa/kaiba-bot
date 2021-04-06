@@ -1,8 +1,8 @@
-// add information to user profile card
 const Discord = require("discord.js");
 const iEditor = require("../img-counter");
 const { prefix } = require('../../config.json')
 
+// handles all changes to user profiles
 module.exports = {
   async addDesc1(message, guildID, userID, user) {
     let imgEmbed = new Discord.MessageEmbed()

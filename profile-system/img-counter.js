@@ -1,6 +1,7 @@
-// handles all requests to change values in the user profile card
+const message = require("discord.js");
 const mongoose = require("../mongoose");
 const imgSchema = require("../schemas/imgSchema");
+const Discord = require("discord.js");
 
 module.exports.addDesc = async (guildID, userID, description) => {
   return await mongoose().then(async (mongoose) => {

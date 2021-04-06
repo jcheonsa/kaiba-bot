@@ -1,5 +1,6 @@
 const { prefix } = require('../config.json')
 
+// ensure people have the right permissions for commands
 const validatePermissions = (permissions) => {
     const validPermissions = [
         'CREATE_INSTANT_INVITE',
@@ -42,7 +43,7 @@ const validatePermissions = (permissions) => {
     }
 }
 
-// cooldown array
+// cooldown timer
 let recentlyRan = []
 
 module.exports = (client, commandOptions) => {
